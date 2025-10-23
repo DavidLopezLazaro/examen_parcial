@@ -1,3 +1,10 @@
+//
+//git add .
+//git commit -m "Solución del examen parcial"
+//git branch -M main
+//git remote add origin git@github.com:DavidLopezLazaro/examen_parcial.git
+//git push -u origin main
+
 import express, { type NextFunction, type Request, type Response } from "express";
 import cors from "cors";
 import axios from "axios";
