@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    /* === File Layout === */
+    // "rootDir": "./src",
+    // "outDir": "./dist",
+
+    /* === Environment Settings === */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "lib": ["ESNext"],
+    "types": ["node"],
+
+    /* === Type Declarations & Maps === */
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    /* === Type Checking === */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,
+
+    /* === Module/Import Behavior === */
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noUncheckedSideEffectImports": true,
+
+    /* === JSX (for React, optional) === */
+    "jsx": "react-jsx"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+
