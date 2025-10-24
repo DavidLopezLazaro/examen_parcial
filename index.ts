@@ -9,17 +9,19 @@ import express, { type NextFunction, type Request, type Response } from "express
 import cors from "cors";
 import axios from "axios";
 
-type Team = {
-  id: number;
-  name: string;
-  city: string;
-  titles: number;
-};
+type LD = {
+  id: number
+  filmName: string
+  rotationType: string, // "CAV" | "CLV"
+  region: string,
+  lengthMinutes: number,
+  videoFormat: string // “NTSC” | “PAL”
+}
 
-// Base de datos simulada
-let teams: Team[] = [
-  { id: 1, name: "Lakers", city: "Los Angeles", titles: 17 },
-  { id: 2, name: "Celtics", city: "Boston", titles: 17 },
+let discs: LD[] = [
+  { id: 1, filmName: "Interstellar", rotationType: "CAV", region: "MAD", lengthMinutes: 181, videoFormat: "NTSC" },
+  { id: 2, filmName: "Inception", rotationType: "CLV", region: "LON", lengthMinutes: 149, videoFormat: "PAL" },
+  { id: 3, filmName: "Dark Knight", rotationType: "CLV", region: "LON", lengthMinutes: 121, videoFormat: "PAL" },
 ];
 
 const app = express();
@@ -28,61 +30,49 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Middleware de manejo de errores
-const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  console.error("Error detectado:", err.message);
-  res.status(500).json({ error: "Error interno del servidor", detail: err.message });
-};
-
-app.get("/teams", (req: Request, res: Response) => {
-  res.json(teams);
+app.get("/discs", (req: Request, res: Response) => {
+  res.json(discs);
 });
 
-app.get("/teams/:id", (req: Request, res: Response) => {
+app.get("/discs/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  const team = teams.find((t) => t.id === id);
+  const team = discs.find((t) => t.id === id);
 
   return team
     ? res.json(team)
-    : res.status(404).json({ error: "Equipo no encontrado" });
+    : res.status(404).json({ error: "Disco no encontrado" });
 });
 
-app.post("/teams", (req: Request, res: Response) => {
+app.post("/discs", (req: Request, res: Response) => {
   try {
-    const newTeam: Team = {
+    const newDisc: LD = {
       id: Date.now(),
       ...req.body,
     };
 
-    teams.push(newTeam);
-    res.status(201).json(newTeam);
+    discs.push(newDisc);
+    res.status(201).json(newDisc);
   } catch (err: any) {
-    res.status(500).json({ error: "Error al crear el equipo", detail: err.message });
+    res.status(500).json({ error: "Error al crear el disco", detail: err.message });
   }
 });
 
-app.delete("/teams/:id", (req: Request, res: Response) => {
+app.delete("/discs/:id", (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const exists = teams.some((t) => t.id === id);
+    const exists = discs.some((t) => t.id === id);
 
     if (!exists)
-      return res.status(404).json({ error: "Equipo no encontrado" });
+      return res.status(404).json({ error: "Disco no encontrado" });
 
-    teams = teams.filter((t) => t.id !== id);
+    discs = discs.filter((t) => t.id !== id);
 
-    res.json({ message: "Equipo eliminado correctamente" });
+    res.json({ message: "Disco eliminado correctamente" });
   } catch (err: any) {
-    res.status(500).json({ error: "Error al eliminar el equipo", detail: err.message });
+    res.status(500).json({ error: "Error al eliminar el disco", detail: err.message });
   }
 });
 
-app.use(errorHandler);
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -93,22 +83,22 @@ const testApi=async()=> {
 
   try {
   
-    const initial = await axios.get<Team[]>(baseURL + "/teams");
+    const initial = await axios.get<LD[]>(baseURL + "/discs");
     console.log("Lista inicial:", initial.data);
 
   
-    const toCreate = { name: "Bulls", city: "Chicago", titles: 6 };
-    const created = await axios.post<Team>(baseURL + "/teams", toCreate);
-    console.log("Equipo creado:", created.data);
+    const toCreate = { id: 4, filmName: "Dunkink", rotationType: "CLV", region: "BER", lengthMinutes: 171, videoFormat: "PAL" };
+    const created = await axios.post<LD>(baseURL + "/discs", toCreate);
+    console.log("Disco creado:", created.data);
 
   
-    const afterCreate = await axios.get<Team[]>(baseURL + "/teams");
+    const afterCreate = await axios.get<LD[]>(baseURL + "/discs");
     console.log("Lista tras crear:", afterCreate.data);
 
-    await axios.delete(baseURL + "/teams/" + created.data.id);
-    console.log("Equipo con id=" + created.data.id + " eliminado.");
+    await axios.delete(baseURL + "/discs/" + created.data.id);
+    console.log("Disco con id=" + created.data.id + " eliminado.");
 
-    const finalList = await axios.get<Team[]>(baseURL + "/teams");
+    const finalList = await axios.get<LD[]>(baseURL + "/discs");
     console.log("Lista final:", finalList.data);
   } catch (err: any) {
     console.error("Fallo en Axios:", err.message);
